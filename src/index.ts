@@ -1,11 +1,15 @@
-import { ApolloServer, gql } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import express from 'express';
 import * as http from 'http';
+import typeDefs from './schema'
+import resolvers from './resolvers'
+import router from './router'
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
-  app.get(`/foo`, (req, res) => res.send(`hey`))
+  app.use(`/`, router)
+
   const httpServer = http.createServer(app);
   const server = new ApolloServer({
     typeDefs,
@@ -18,15 +22,4 @@ async function startApolloServer(typeDefs, resolvers) {
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
 
-const typeDefs = gql`
-  type Query {
-    getNums: Int
-  }
-`
-const resolvers = {
-  Query: {
-    getNums: () => 1
-  }
-}
 startApolloServer(typeDefs, resolvers)
-
